@@ -15,6 +15,7 @@
   --context: #bdc4cc;
   --outline: #5c6978;
   --ruler: #b9770e;
+  --original: #8c6bcc;
   font-family: Inter, 'Segoe UI', system-ui, sans-serif;
   color: var(--ink);
   background: var(--page);
@@ -36,6 +37,7 @@
   --context: #545e6b;
   --outline: #9eabba;
   --ruler: #f0b445;
+  --original: #b8a0f2;
 }
 * {
   box-sizing: border-box;
@@ -1017,6 +1019,12 @@ svg.section text {
 .dot.unchanged {
   background: var(--context);
 }
+.dot.original {
+  background: var(--original);
+}
+.dot.path {
+  background: linear-gradient(90deg, var(--original) 50%, var(--changed) 50%);
+}
 .dot.outline {
   background: var(--outline);
 }
@@ -1200,6 +1208,18 @@ svg.section text {
   .stage {
     height: min(42dvh, 380px);
   }
+  /* A view with a timeline gives it room above the sheet. */
+  .scene:has(> .timeline:not([hidden])) .stage {
+    height: min(24dvh, 240px);
+    min-height: 170px;
+  }
+  /* ...and the sheet starts lower, so the figure and its timeline are both in view. */
+  .shell:has(.timeline:not([hidden])) {
+    padding-bottom: calc(22dvh + 8px);
+  }
+  .shell:has(.timeline:not([hidden])) .sheet:not(.open) {
+    height: 22dvh;
+  }
   .sheet {
     position: fixed;
     left: 0;
@@ -1238,4 +1258,155 @@ svg.section text {
   .sheet {
     transition: none;
   }
+}
+.timeline {
+  max-height: 38vh;
+  overflow-y: auto;
+  padding-bottom: 6px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+.movement-grid {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 6px 12px 0;
+  cursor: crosshair;
+  touch-action: none;
+}
+.movement-grid text {
+  font-size: 11px;
+  fill: var(--muted);
+  white-space: pre;
+}
+.movement-grid text.part {
+  font-size: 12px;
+}
+.movement-note {
+  margin: 8px 16px 0;
+}
+.movement-grid text.differs {
+  fill: var(--ink);
+  font-weight: 600;
+}
+.movement-grid .band {
+  fill: var(--stage);
+}
+.movement-grid .cell {
+  fill: var(--changed);
+}
+.movement-grid .cell.timing {
+  fill: var(--ruler);
+}
+.movement-grid .hit {
+  fill: transparent;
+  cursor: pointer;
+}
+.movement-grid .hit:focus-visible {
+  outline: 2px solid var(--accent);
+}
+.movement-grid .tick {
+  font-variant-numeric: tabular-nums;
+}
+.movement-grid .cursor {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.movement-transport {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 12px 0;
+}
+.movement-buttons {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+.movement-buttons .word {
+  display: none;
+}
+.movement-buttons .quiet.icon {
+  min-width: 32px;
+  justify-content: center;
+}
+.movement-time {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.movement-clock {
+  flex: none;
+  min-width: 64px;
+  text-align: right;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.movement-more {
+  margin: 4px 12px 0;
+  font-size: 12.5px;
+}
+@media (pointer: coarse) {
+  .movement-buttons .quiet.icon {
+    min-width: 44px;
+    min-height: 40px;
+  }
+  .movement-time {
+    height: 32px;
+  }
+}
+.movement-now {
+  list-style: none;
+  margin: 0;
+  padding: 0 16px 6px;
+  font-size: 12.5px;
+}
+.movement-now li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0;
+}
+.movement-now li strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--changed);
+}
+.movement-now li.timing strong {
+  color: var(--ruler);
+}
+.movement-now li.same {
+  color: var(--muted);
+}
+.movement-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 12px 8px;
+}
+.movement-stretch {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 8px;
+  align-items: center;
+  width: 100%;
+  margin: 0 0 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  text-align: left;
+  font-size: 13px;
+}
+.movement-stretch .what {
+  grid-column: 2;
+  color: var(--muted);
+  font-size: 12px;
+}
+.movement-stretch:hover,
+.movement-stretch.current {
+  border-color: var(--changed);
+}
+.movement-stretch.timing.current {
+  border-color: var(--ruler);
 }

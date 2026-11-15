@@ -9,8 +9,8 @@ const kinds = (r: ReturnType<typeof compareX3D>) =>
   r.changes.map((c) => `${c.category}:${c.kind}:${c.field ?? ''}`);
 
 describe('catalogued node types', () => {
-  it('covers 50 nodes, including the most common ones in real files', () => {
-    expect(Object.keys(catalog)).toHaveLength(50);
+  it('covers 54 nodes, including the most common ones in real files', () => {
+    expect(Object.keys(catalog)).toHaveLength(54);
     for (const name of [
       'Billboard',
       'Collision',

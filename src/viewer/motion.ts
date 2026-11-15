@@ -1,8 +1,9 @@
 import { Box3, Matrix4, Quaternion, Vector3 } from 'three';
 
 /**
- * Motion of animated Transforms, read from declarations only: a TimeSensor drives a
- * PositionInterpolator or OrientationInterpolator, whose value is routed to a Transform.
+ * Motion of animated Transforms and humanoid joints, read from declarations only: a TimeSensor
+ * drives a PositionInterpolator or OrientationInterpolator, whose value is routed to a Transform,
+ * an HAnimHumanoid, an HAnimJoint or an HAnimSite. All four place their children the same way.
  * Every enabled routed clock is assumed to start at time 0 and run for a loop or one cycle;
  * sensors, scripts and other triggers are not evaluated.
  *
@@ -11,7 +12,7 @@ import { Box3, Matrix4, Quaternion, Vector3 } from 'three';
  */
 
 type Field = 'translation' | 'rotation' | 'scale';
-interface Channel {
+export interface Channel {
   field: Field;
   key: number[];
   values: number[][];
@@ -37,7 +38,7 @@ const numbers = (raw: string | null): number[] =>
     .split(/[\s,]+/)
     .filter(Boolean)
     .map(Number);
-const attribute = (node: Element, name: string, fallback: number[]): number[] => {
+export const attribute = (node: Element, name: string, fallback: number[]): number[] => {
   const value = numbers(node.getAttribute(name));
   return value.length === fallback.length && value.every(Number.isFinite) ? value : fallback;
 };
@@ -48,16 +49,20 @@ const elements = (root: Document | Element, name: string): Element[] =>
         node.namespaceURI === 'http://www.web3d.org/specifications/x3d-namespace') &&
       (name === '*' || node.localName === name),
   );
-const parentOf = (node: Element): Element | null => {
+export const parentOf = (node: Element): Element | null => {
   const parent = node.parentNode as Element | null;
   return parent && parent.nodeType === 1 ? parent : null;
 };
+
+/** Nodes that place their children with translation, rotation, scale and centre. */
+export const PLACEMENTS = new Set(['Transform', 'HAnimHumanoid', 'HAnimJoint', 'HAnimSite']);
+const CONTAINERS = new Set(['Group', 'HAnimSegment', ...PLACEMENTS]);
 
 /** Only Scene placements we can evaluate; prototype bodies have their own DEF scope. */
 const placedInScene = (node: Element): boolean => {
   for (let at = parentOf(node); at; at = parentOf(at)) {
     if (at.localName === 'Scene') return true;
-    if (!['Group', 'Transform'].includes(at.localName) || at.getAttribute('USE')) return false;
+    if (!CONTAINERS.has(at.localName) || at.getAttribute('USE')) return false;
     if (at.namespaceURI && at.namespaceURI !== 'http://www.web3d.org/specifications/x3d-namespace')
       return false;
   }
@@ -139,7 +144,7 @@ export function readMotionScene(doc: Document): MotionScene {
     const interpolator = byDef.get(route.from),
       target = byDef.get(route.to),
       field = TARGETS[route.toField];
-    if (!interpolator || !target || !field || target.localName !== 'Transform') continue;
+    if (!interpolator || !target || !field || !PLACEMENTS.has(target.localName)) continue;
     const arity = INTERPOLATORS[interpolator.localName];
     if (!arity || route.fromField !== 'value_changed') continue;
     if ((field === 'rotation') !== (arity === 4)) continue;
@@ -174,7 +179,7 @@ export function readMotionScene(doc: Document): MotionScene {
     channels.set(target, next);
   }
   const transforms = new Map<string, Element>();
-  for (const [def, node] of byDef) if (node.localName === 'Transform') transforms.set(def, node);
+  for (const [def, node] of byDef) if (PLACEMENTS.has(node.localName)) transforms.set(def, node);
   const shapes: ShapeBox[] = [];
   for (const shape of elements(doc, 'Shape')) {
     if (!placedInScene(shape) || shape.getAttribute('USE')) continue;
@@ -184,14 +189,14 @@ export function readMotionScene(doc: Document): MotionScene {
   return { animated, transforms, channels, shapes };
 }
 
-const quaternion = ([x, y, z, angle]: number[]) => {
+export const quaternion = ([x, y, z, angle]: number[]) => {
   const axis = new Vector3(x, y, z);
   return axis.lengthSq() < 1e-12
     ? new Quaternion()
     : new Quaternion().setFromAxisAngle(axis.normalize(), angle);
 };
 
-function sample(channel: Channel, time: number): number[] | Quaternion {
+export function sample(channel: Channel, time: number): number[] | Quaternion {
   const turns = time / channel.cycle;
   const fraction = channel.loop ? turns - Math.floor(turns) : Math.min(Math.max(turns, 0), 1);
   const { key, values } = channel;
@@ -213,7 +218,7 @@ function sample(channel: Channel, time: number): number[] | Quaternion {
 }
 
 /** Local matrix of one Transform at a moment: T · C · R · SR · S · SR⁻¹ · C⁻¹. */
-function localMatrix(node: Element, channels: Channel[] | undefined, time: number): Matrix4 {
+export function localMatrix(node: Element, channels: Channel[] | undefined, time: number): Matrix4 {
   const value = (field: Field, fallback: number[]) => {
     const channel = channels?.find((item) => item.field === field);
     return channel ? sample(channel, time) : attribute(node, field, fallback);
@@ -239,7 +244,7 @@ function localMatrix(node: Element, channels: Channel[] | undefined, time: numbe
 export function worldMatrixAt(scene: MotionScene, node: Element, time: number): Matrix4 {
   const chain: Element[] = [];
   for (let at: Element | null = node; at && at.localName !== 'Scene'; at = parentOf(at))
-    if (at.localName === 'Transform') chain.unshift(at);
+    if (PLACEMENTS.has(at.localName)) chain.unshift(at);
   const world = new Matrix4();
   for (const transform of chain)
     world.multiply(localMatrix(transform, scene.channels.get(transform), time));
@@ -261,7 +266,7 @@ export function objectBox(scene: MotionScene, node: Element): Box3 {
     const chain: Element[] = [];
     let at: Element | null = item.shape;
     for (; at && at !== node; at = parentOf(at))
-      if (at.localName === 'Transform') chain.unshift(at);
+      if (PLACEMENTS.has(at.localName)) chain.unshift(at);
     if (!at) continue;
     const relative = new Matrix4();
     for (const transform of chain)

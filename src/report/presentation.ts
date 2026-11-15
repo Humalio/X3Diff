@@ -125,18 +125,22 @@ export function booleanWord(change: ChangeRecord, value: unknown): string | unde
   return words && typeof value === 'boolean' ? words[value ? 0 : 1] : undefined;
 }
 
-/** The path of the object a change belongs to: its Transform, or else its Shape. */
+/** Nodes that place an object: a Transform, or a humanoid and its joints. */
+const PLACEMENT = /^(Transform|HAnimHumanoid|HAnimJoint)\[/;
+
+/** The path of the object a change belongs to: its Transform or joint, or else its Shape. */
 export function objectPath(change: ChangeRecord): string | undefined {
   const path = change.afterNode?.path ?? change.beforeNode?.path;
   if (!path) return undefined;
   const parts = path.split('/');
-  // A Transform owns its visual descendants. Without one, the nearest Shape
+  // A Transform or joint owns its visual descendants. Without one, the nearest Shape
   // owns the geometry and appearance changes beneath it.
-  for (const type of ['Transform', 'Shape']) {
-    for (let index = parts.length - 1; index >= 0; index--) {
-      if (parts[index].startsWith(`${type}[`)) return parts.slice(0, index + 1).join('/');
-    }
-  }
+  for (const owns of [
+    (part: string) => PLACEMENT.test(part),
+    (part: string) => part.startsWith('Shape['),
+  ])
+    for (let index = parts.length - 1; index >= 0; index--)
+      if (owns(parts[index])) return parts.slice(0, index + 1).join('/');
   return path;
 }
 function objectLabel(path: string, changes: ChangeRecord[], named?: string): string {
@@ -244,7 +248,11 @@ function signature(change: ChangeRecord): string | undefined {
 }
 /** Fewer than this many objects with the same change are listed one by one. */
 export const BUNDLE_MINIMUM = 3;
-const nouns: Record<string, string> = { Material: 'materials', Transform: 'placements' };
+const nouns: Record<string, string> = {
+  Material: 'materials',
+  Transform: 'placements',
+  HAnimJoint: 'joints',
+};
 
 /**
  * The register as it is listed: one entry per object, except that objects whose changes are
@@ -380,7 +388,7 @@ export function summarizeChanges(changes: readonly ChangeRecord[]): string {
   const typeOf = (c: ChangeRecord) => (c.afterNode ?? c.beforeNode)?.nodeType ?? '';
   for (const group of groupChanges(changes)) {
     const path = group.key.slice(group.key.indexOf('|') + 1);
-    const isObject = /\/(Transform|Shape)\[\d+\]$/.test(path);
+    const isObject = /\/(Transform|HAnimHumanoid|HAnimJoint|Shape)\[\d+\]$/.test(path);
     const whole = (c: ChangeRecord) =>
       (c.afterNode ?? c.beforeNode)?.path === path || typeOf(c) === 'Shape';
     const adds = group.changes.filter((c) => c.kind === 'nodeAdded'),

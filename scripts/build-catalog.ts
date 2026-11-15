@@ -22,14 +22,19 @@ const model40Text = await source('--model40',model40Url,expectedModel40Hash);
 const model = new DOMParser().parseFromString(modelText, 'application/xml');
 const schema = new DOMParser().parseFromString(schemaText, 'application/xml');
 const model40 = new DOMParser().parseFromString(model40Text, 'application/xml');
-const selected = `Anchor Appearance Background BooleanFilter BooleanTrigger Box ColorInterpolator Coordinate Cylinder FontStyle Group ImageTexture IndexedFaceSet Inline IntegerTrigger Material MetadataBoolean MetadataDouble MetadataFloat MetadataInteger MetadataSet MetadataString OrientationInterpolator ScalarInterpolator Shape Sphere Switch Text TimeSensor TimeTrigger TouchSensor Transform Viewpoint WorldInfo Billboard Collision Color Cone Extrusion IndexedLineSet IntegerSequencer LOD NavigationInfo PixelTexture PositionInterpolator TextureTransform DirectionalLight PointLight SpotLight OrthoViewpoint`.split(' ');
+const selected = `Anchor Appearance Background BooleanFilter BooleanTrigger Box ColorInterpolator Coordinate Cylinder FontStyle Group ImageTexture IndexedFaceSet Inline IntegerTrigger Material MetadataBoolean MetadataDouble MetadataFloat MetadataInteger MetadataSet MetadataString OrientationInterpolator ScalarInterpolator Shape Sphere Switch Text TimeSensor TimeTrigger TouchSensor Transform Viewpoint WorldInfo Billboard Collision Color Cone Extrusion IndexedLineSet IntegerSequencer LOD NavigationInfo PixelTexture PositionInterpolator TextureTransform DirectionalLight PointLight SpotLight OrthoViewpoint HAnimHumanoid HAnimJoint HAnimSegment HAnimSite`.split(' ');
 
 // Fields that X3D 4.0 adds to a catalogued node and that are compared as well (ISO/IEC 19775-1:2023,
-// 17 Lighting component). Other 4.0 additions stay outside the catalog and are diagnosed as not compared.
+// 17 Lighting and 26 Humanoid animation components). Other 4.0 additions stay outside the catalog
+// and are diagnosed as not compared.
 const additions40: Record<string, string[]> = {
   DirectionalLight: ['shadowIntensity', 'shadows'],
   PointLight: ['shadowIntensity', 'shadows'],
   SpotLight: ['shadowIntensity', 'shadows'],
+  HAnimHumanoid: ['description', 'jointBindingPositions', 'jointBindingRotations', 'jointBindingScales', 'loa', 'skeletalConfiguration'],
+  HAnimJoint: ['description'],
+  HAnimSegment: ['description'],
+  HAnimSite: ['description'],
 };
 
 // Errors in the published X3DUOM 3.3, corrected to the X3D 3.3 specification (ISO/IEC 19775-1,
@@ -80,7 +85,7 @@ for (const name of selected) {
   }
   result[name] = { containerField: container, fields: Object.fromEntries(Object.entries(fields).sort(([a],[b]) => a.localeCompare(b))) };
 }
-const out = `// Generated from official Web3D X3DUOM 3.3 and X3D 3.3 XSD, with the X3D 4.0 light fields and defaults from X3DUOM 4.0. Do not hand edit.\n`+
+const out = `// Generated from official Web3D X3DUOM 3.3 and X3D 3.3 XSD, with the X3D 4.0 light and humanoid fields and defaults from X3DUOM 4.0. Do not hand edit.\n`+
   `export const catalogProvenance = ${JSON.stringify({ modelUrl, modelSha256: hash(modelText), schemaUrl, schemaSha256: hash(schemaText), model40Url, model40Sha256: hash(model40Text) }, null, 2)} as const;\n`+
   `export const catalog = ${JSON.stringify(result, null, 2)} as const;\n`;
 writeFileSync('src/x3d/catalog.ts', out);

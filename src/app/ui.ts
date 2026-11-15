@@ -22,6 +22,8 @@ export interface Workbench {
   tools: HTMLElement;
   footer: HTMLElement;
   side: HTMLElement;
+  /** Full-width strip under the stage, for a view's timeline; hidden unless a view fills it. */
+  timeline: HTMLElement;
   /** Drawing layer over the stage, for views that are flat. */
   flat: HTMLElement;
   setFlat(on: boolean): void;
@@ -76,6 +78,7 @@ export function setIcon(node: HTMLElement, symbol: string, label: string): void 
   const word = make('span', 'word', label);
   word.dataset.short = label.split(' ')[0];
   node.setAttribute('aria-label', label);
+  if (node.hasAttribute('title')) node.title = label;
   node.replaceChildren(mark, word);
 }
 /** Pair each action's mark with a readable label. */

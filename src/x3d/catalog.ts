@@ -1,4 +1,4 @@
-// Generated from official Web3D X3DUOM 3.3 and X3D 3.3 XSD, with the X3D 4.0 light fields and defaults from X3DUOM 4.0. Do not hand edit.
+// Generated from official Web3D X3DUOM 3.3 and X3D 3.3 XSD, with the X3D 4.0 light and humanoid fields and defaults from X3DUOM 4.0. Do not hand edit.
 export const catalogProvenance = {
   "modelUrl": "https://www.web3d.org/specifications/X3dUnifiedObjectModel-3.3.xml",
   "modelSha256": "6d9561c4398512e9a891e1221667b6a11994c20979aa4bbcabc21cbf056c0eae",
@@ -1823,6 +1823,350 @@ export const catalog = {
         "type": "SFBool",
         "accessType": "inputOutput",
         "default": "false"
+      }
+    }
+  },
+  "HAnimHumanoid": {
+    "containerField": "children",
+    "fields": {
+      "bboxCenter": {
+        "type": "SFVec3f",
+        "accessType": "initializeOnly",
+        "default": "0 0 0"
+      },
+      "bboxSize": {
+        "type": "SFVec3f",
+        "accessType": "initializeOnly",
+        "default": "-1 -1 -1"
+      },
+      "center": {
+        "type": "SFVec3f",
+        "accessType": "inputOutput",
+        "default": "0 0 0"
+      },
+      "class": {
+        "type": "SFString",
+        "accessType": "inputOutput"
+      },
+      "description": {
+        "type": "SFString",
+        "accessType": "inputOutput",
+        "since": "4.0"
+      },
+      "info": {
+        "type": "MFString",
+        "accessType": "inputOutput"
+      },
+      "jointBindingPositions": {
+        "type": "MFVec3f",
+        "accessType": "inputOutput",
+        "since": "4.0"
+      },
+      "jointBindingRotations": {
+        "type": "MFRotation",
+        "accessType": "inputOutput",
+        "since": "4.0"
+      },
+      "jointBindingScales": {
+        "type": "MFVec3f",
+        "accessType": "inputOutput",
+        "since": "4.0"
+      },
+      "joints": {
+        "type": "MFNode",
+        "accessType": "inputOutput"
+      },
+      "loa": {
+        "type": "SFInt32",
+        "accessType": "inputOutput",
+        "default": "-1",
+        "since": "4.0"
+      },
+      "metadata": {
+        "type": "SFNode",
+        "accessType": "inputOutput",
+        "default": "NULL"
+      },
+      "name": {
+        "type": "SFString",
+        "accessType": "inputOutput"
+      },
+      "rotation": {
+        "type": "SFRotation",
+        "accessType": "inputOutput",
+        "default": "0 0 1 0"
+      },
+      "scale": {
+        "type": "SFVec3f",
+        "accessType": "inputOutput",
+        "default": "1 1 1"
+      },
+      "scaleOrientation": {
+        "type": "SFRotation",
+        "accessType": "inputOutput",
+        "default": "0 0 1 0"
+      },
+      "segments": {
+        "type": "MFNode",
+        "accessType": "inputOutput"
+      },
+      "sites": {
+        "type": "MFNode",
+        "accessType": "inputOutput"
+      },
+      "skeletalConfiguration": {
+        "type": "SFString",
+        "accessType": "inputOutput",
+        "default": "BASIC",
+        "since": "4.0"
+      },
+      "skeleton": {
+        "type": "MFNode",
+        "accessType": "inputOutput"
+      },
+      "skin": {
+        "type": "MFNode",
+        "accessType": "inputOutput"
+      },
+      "skinCoord": {
+        "type": "SFNode",
+        "accessType": "inputOutput",
+        "default": "NULL"
+      },
+      "skinNormal": {
+        "type": "SFNode",
+        "accessType": "inputOutput",
+        "default": "NULL"
+      },
+      "translation": {
+        "type": "SFVec3f",
+        "accessType": "inputOutput",
+        "default": "0 0 0"
+      },
+      "version": {
+        "type": "SFString",
+        "accessType": "inputOutput"
+      },
+      "viewpoints": {
+        "type": "MFNode",
+        "accessType": "inputOutput"
+      }
+    }
+  },
+  "HAnimJoint": {
+    "containerField": "children",
+    "fields": {
+      "bboxCenter": {
+        "type": "SFVec3f",
+        "accessType": "initializeOnly",
+        "default": "0 0 0"
+      },
+      "bboxSize": {
+        "type": "SFVec3f",
+        "accessType": "initializeOnly",
+        "default": "-1 -1 -1"
+      },
+      "center": {
+        "type": "SFVec3f",
+        "accessType": "inputOutput",
+        "default": "0 0 0"
+      },
+      "children": {
+        "type": "MFNode",
+        "accessType": "inputOutput"
+      },
+      "class": {
+        "type": "SFString",
+        "accessType": "inputOutput"
+      },
+      "description": {
+        "type": "SFString",
+        "accessType": "inputOutput",
+        "since": "4.0"
+      },
+      "displacers": {
+        "type": "MFNode",
+        "accessType": "inputOutput"
+      },
+      "limitOrientation": {
+        "type": "SFRotation",
+        "accessType": "inputOutput",
+        "default": "0 0 1 0"
+      },
+      "llimit": {
+        "type": "MFFloat",
+        "accessType": "inputOutput",
+        "default": "0 0 0"
+      },
+      "metadata": {
+        "type": "SFNode",
+        "accessType": "inputOutput",
+        "default": "NULL"
+      },
+      "name": {
+        "type": "SFString",
+        "accessType": "inputOutput"
+      },
+      "rotation": {
+        "type": "SFRotation",
+        "accessType": "inputOutput",
+        "default": "0 0 1 0"
+      },
+      "scale": {
+        "type": "SFVec3f",
+        "accessType": "inputOutput",
+        "default": "1 1 1"
+      },
+      "scaleOrientation": {
+        "type": "SFRotation",
+        "accessType": "inputOutput",
+        "default": "0 0 1 0"
+      },
+      "skinCoordIndex": {
+        "type": "MFInt32",
+        "accessType": "inputOutput"
+      },
+      "skinCoordWeight": {
+        "type": "MFFloat",
+        "accessType": "inputOutput"
+      },
+      "stiffness": {
+        "type": "MFFloat",
+        "accessType": "inputOutput",
+        "default": "0 0 0"
+      },
+      "translation": {
+        "type": "SFVec3f",
+        "accessType": "inputOutput",
+        "default": "0 0 0"
+      },
+      "ulimit": {
+        "type": "MFFloat",
+        "accessType": "inputOutput",
+        "default": "0 0 0"
+      }
+    }
+  },
+  "HAnimSegment": {
+    "containerField": "children",
+    "fields": {
+      "bboxCenter": {
+        "type": "SFVec3f",
+        "accessType": "initializeOnly",
+        "default": "0 0 0"
+      },
+      "bboxSize": {
+        "type": "SFVec3f",
+        "accessType": "initializeOnly",
+        "default": "-1 -1 -1"
+      },
+      "centerOfMass": {
+        "type": "SFVec3f",
+        "accessType": "inputOutput",
+        "default": "0 0 0"
+      },
+      "children": {
+        "type": "MFNode",
+        "accessType": "inputOutput"
+      },
+      "class": {
+        "type": "SFString",
+        "accessType": "inputOutput"
+      },
+      "coord": {
+        "type": "SFNode",
+        "accessType": "inputOutput",
+        "default": "NULL"
+      },
+      "description": {
+        "type": "SFString",
+        "accessType": "inputOutput",
+        "since": "4.0"
+      },
+      "displacers": {
+        "type": "MFNode",
+        "accessType": "inputOutput"
+      },
+      "mass": {
+        "type": "SFFloat",
+        "accessType": "inputOutput",
+        "default": "0"
+      },
+      "metadata": {
+        "type": "SFNode",
+        "accessType": "inputOutput",
+        "default": "NULL"
+      },
+      "momentsOfInertia": {
+        "type": "MFFloat",
+        "accessType": "inputOutput",
+        "default": "0 0 0 0 0 0 0 0 0"
+      },
+      "name": {
+        "type": "SFString",
+        "accessType": "inputOutput"
+      }
+    }
+  },
+  "HAnimSite": {
+    "containerField": "children",
+    "fields": {
+      "bboxCenter": {
+        "type": "SFVec3f",
+        "accessType": "initializeOnly",
+        "default": "0 0 0"
+      },
+      "bboxSize": {
+        "type": "SFVec3f",
+        "accessType": "initializeOnly",
+        "default": "-1 -1 -1"
+      },
+      "center": {
+        "type": "SFVec3f",
+        "accessType": "inputOutput",
+        "default": "0 0 0"
+      },
+      "children": {
+        "type": "MFNode",
+        "accessType": "inputOutput"
+      },
+      "class": {
+        "type": "SFString",
+        "accessType": "inputOutput"
+      },
+      "description": {
+        "type": "SFString",
+        "accessType": "inputOutput",
+        "since": "4.0"
+      },
+      "metadata": {
+        "type": "SFNode",
+        "accessType": "inputOutput",
+        "default": "NULL"
+      },
+      "name": {
+        "type": "SFString",
+        "accessType": "inputOutput"
+      },
+      "rotation": {
+        "type": "SFRotation",
+        "accessType": "inputOutput",
+        "default": "0 0 1 0"
+      },
+      "scale": {
+        "type": "SFVec3f",
+        "accessType": "inputOutput",
+        "default": "1 1 1"
+      },
+      "scaleOrientation": {
+        "type": "SFRotation",
+        "accessType": "inputOutput",
+        "default": "0 0 1 0"
+      },
+      "translation": {
+        "type": "SFVec3f",
+        "accessType": "inputOutput",
+        "default": "0 0 0"
       }
     }
   }

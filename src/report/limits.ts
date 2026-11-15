@@ -29,3 +29,9 @@ export const VOLUME_LIMITS =
 
 export const MOTION_LIMITS =
   'Paths follow one point of the object (named above) through declared animation under Group/Transform placement. An enabled TimeSensor drives a PositionInterpolator or OrientationInterpolator routed to a Transform, including animated parents. Clocks start at 0 s; declared start, stop, pause and resume times, sensors and scripts are not evaluated. Each revision uses its longest contributing clock interval and 240 sampling intervals; motion between samples can be missed. Unsupported geometry uses a unit box as a tracking reference. Distances are in scene units.';
+
+export const MOVEMENT_SHORT =
+  'Each joint is compared by its own pose against its parent at the same moment; sensors and scripts are not run.';
+
+export const MOVEMENT_LIMITS =
+  'Every animated joint (an HAnimJoint, or a Transform that animation moves) is compared by its own rotation, translation and scale relative to its parent, so a difference shows at the joint where it starts. Joints are grouped into body parts by their H-Anim names; other names are listed under Other. Enabled TimeSensors drive PositionInterpolators and OrientationInterpolators from 0 s; declared start, stop, pause and resume times, sensors, scripts and skinning are not evaluated. Both revisions are sampled 240 times over the longer clock interval, so differences between samples can be missed. Rotations under 1° (and translations under 0.5 % of the figure size) count as the same. A stretch counts as a timing change when one constant shift of up to 1.5 s makes the revised joints match the original within 3° for the whole stretch.';

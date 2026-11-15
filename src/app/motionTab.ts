@@ -1,7 +1,7 @@
 import type { Vector3 } from 'three';
 import { MOTION_LIMITS } from '../report/limits';
 import { motionFacts } from '../report/motionFacts';
-import { compareMotion, readMotionScene, type MotionPair } from '../viewer/motion';
+import { compareMotion, PLACEMENTS, readMotionScene, type MotionPair } from '../viewer/motion';
 import { prescan } from '../x3d/prescan';
 import { affectsShape, parsePrimitives } from '../viewer/shapeGeometry';
 import { COLORS } from './calmScene';
@@ -45,8 +45,8 @@ export function motionTab(wb: Workbench): Tab {
   const dependencies = pairs.map((pair) => {
     const names = new Set<string>([pair.def]);
     for (const doc of sources) {
-      const transform = Array.from(doc.getElementsByTagName('Transform')).find(
-        (node) => node.getAttribute('DEF') === pair.def,
+      const transform = Array.from(doc.getElementsByTagName('*')).find(
+        (node) => PLACEMENTS.has(node.localName) && node.getAttribute('DEF') === pair.def,
       );
       for (let at = transform?.parentElement; at; at = at.parentElement) {
         const name = at.getAttribute('DEF');

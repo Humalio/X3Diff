@@ -1,0 +1,2 @@
+- [Catalog sources](catalog-sources.md) — pinned X3DUOM copies live in Workspace/Temp/x3diff-fixes/uom; online 4.0 model no longer matches its pin
+- [Joe example](joe-example.md) — Joe before/after are built from a pinned Web3D file in Workspace/Temp/x3diff-joe

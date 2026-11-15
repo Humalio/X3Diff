@@ -124,7 +124,8 @@ export function buildCalmScene(
 ): CalmScene {
   const parser = new DOMParser();
   const result = parser.parseFromString(
-    '<X3D version="4.0" profile="Immersive"><Scene/></X3D>',
+    // Humanoid nodes need their component declared, or the renderer does not know them.
+    `<X3D version="4.0" profile="Immersive">${[beforeXML, afterXML].some((xml) => xml.includes('<HAnim')) ? '<head><component name="HAnim" level="1"/></head>' : ''}<Scene/></X3D>`,
     'application/xml',
   );
   const sceneOf = (doc: Document) =>

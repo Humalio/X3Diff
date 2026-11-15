@@ -15,6 +15,7 @@ import { buildCalmScene } from './calmScene';
 import { differencesTab } from './differences';
 import { geometryTabs } from './geometry';
 import { motionTab } from './motionTab';
+import { movementTab } from './movementTab';
 import { resizableSide } from './splitter';
 import { Selection } from './selection';
 import { captionText, make, type Tab, type Workbench } from './ui';
@@ -48,6 +49,8 @@ const EXAMPLES: Record<string, { label: string; load: () => Promise<string[]> }>
     load: fetched('forgeworks/before.x3d', 'forgeworks/after.x3d'),
   },
   fitlab: { label: 'Fit Lab', load: fetched('fitlab/before.x3d', 'fitlab/after.x3d') },
+  avatar: { label: 'Dancer', load: fetched('avatar/before.x3d', 'avatar/after.x3d') },
+  joe: { label: 'Joe (H-Anim)', load: fetched('joe/before.x3d', 'joe/after.x3d') },
   example: { label: 'Objects', load: fetched('HelloWorld.x3d', 'HelloWorld-edited.x3d') },
   dolphin: {
     label: 'Dolphin',
@@ -103,6 +106,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div class="scene">
       <div class="caption"><div class="tools" id="tools"></div></div>
       <div class="stage" id="stage"><div class="flat" id="flat" hidden></div><p class="note" id="note" role="status"><b id="caption">Comparing…</b><span id="detail"></span></p><div class="drop" id="drop" hidden>Drop one or two .x3d files</div></div>
+      <div class="timeline" id="timeline" hidden></div>
       <div class="chips" id="footer"></div>
     </div>
     <div class="splitter" id="splitter" role="separator" aria-orientation="vertical" aria-label="Resize the side panel" title="Drag to resize · Double-click to reset" tabindex="0"></div>
@@ -134,6 +138,8 @@ function open(tab: Tab): void {
   const mine = ++ticket;
   current?.hide?.();
   current = tab;
+  el('#timeline').replaceChildren();
+  el('#timeline').hidden = true;
   history.replaceState(null, '', `${location.pathname}${location.search}#${tab.id}`);
   for (const node of Array.from(el('#tabs').children) as HTMLElement[]) {
     const selected = node.dataset.tab === tab.id;
@@ -178,7 +184,8 @@ function reset(message: string, detail = ''): void {
   for (const tab of tabs) tab.dispose?.();
   tabs = [];
   pane.clear();
-  for (const id of ['#tabs', '#tools', '#footer', '#side']) el(id).replaceChildren();
+  for (const id of ['#tabs', '#tools', '#footer', '#side', '#timeline']) el(id).replaceChildren();
+  el('#timeline').hidden = true;
   el('#flat').hidden = true;
   el('#notices').hidden = true;
   el<HTMLSelectElement>('#export').disabled = true;
@@ -199,7 +206,8 @@ function showNotices(report: X3DiffReport): void {
     : report.diagnostics.map((item) => describeDiagnostic(item, names));
   const notices = el<HTMLDetailsElement>('#notices');
   notices.hidden = !lines.length;
-  notices.open = coverage.partial;
+  // Open where there is room for it; a phone keeps the headline and opens it on a tap.
+  notices.open = coverage.partial && !matchMedia('(max-width: 640px)').matches;
   notices.classList.toggle('partial', coverage.partial);
   el('#notices-title').textContent = coverage.partial
     ? 'Incomplete comparison: some content was not compared'
@@ -253,10 +261,11 @@ async function compare(preserveSelection = false): Promise<void> {
       tools: el('#tools'),
       footer: el('#footer'),
       side: el('#side'),
+      timeline: el('#timeline'),
       flat,
       setFlat: (on) => (flat.hidden = !on),
     };
-    tabs = [differencesTab(wb), ...geometryTabs(wb), motionTab(wb)].filter((tab) =>
+    tabs = [differencesTab(wb), ...geometryTabs(wb), movementTab(wb), motionTab(wb)].filter((tab) =>
       tab.available(),
     );
     el('#tabs').replaceChildren(

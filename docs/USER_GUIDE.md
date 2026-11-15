@@ -8,7 +8,7 @@ The app opens on Brickhaven. Choose another example from the header, or use **A*
 
 You can drop one or two `.x3d` or `.xml` files anywhere on the page. One fills the next empty side, or replaces B when both are loaded. For two files, names containing before/original/old and after/revised/edited/new determine their sides; otherwise file-name order determines A and B. Files must be UTF-8 XML, at most 20 MiB each. Nothing is uploaded.
 
-Example links accept `?example=brickhaven`, `forgeworks`, `fitlab`, `dolphin` or `example`. Add `#differences`, `#sections`, `#volume`, `#deviation` or `#motion` to open an available view. Unknown examples open Brickhaven; unavailable views open File differences.
+Example links accept `?example=brickhaven`, `forgeworks`, `fitlab`, `avatar`, `joe`, `dolphin` or `example`. Add `#differences`, `#sections`, `#volume`, `#deviation`, `#movement` or `#motion` to open an available view. Unknown examples open Brickhaven; unavailable views open File differences.
 
 ## The workspace
 
@@ -16,7 +16,7 @@ Every analysis uses one stage and a side panel. Drag the divider to resize the p
 
 On a phone the header is two rows: the example, then A and B. **⋯** opens Coverage, Settings, Export and the theme. Each tab is one word (Differences, Slice, Volume, Surface, Motion), the view buttons are a mark over one word, and A / Differences / B is an **A · Δ · B** switch. The panel is a sheet over the bottom of the screen, so the stage stays in view; tap its handle to make it taller or shorter.
 
-**Dark theme** / **Light theme** switches the theme and remembers your choice. A first visit follows your system preference. The analysis tabs support Left/Right, Home and End keys. Geometry views appear only when supported changed object pairs can be measured; Motion paths appears when supported motion differs.
+**Dark theme** / **Light theme** switches the theme and remembers your choice. A first visit follows your system preference. The analysis tabs support Left/Right, Home and End keys. Geometry views appear only when supported changed object pairs can be measured; Movement appears when an animated figure (a humanoid, or animated parts inside animated parts) moves differently; Motion paths appears when supported motion differs.
 
 | Symbol                    | Meaning                                                                    |
 | ------------------------- | -------------------------------------------------------------------------- |
@@ -65,6 +65,18 @@ Closed boxes use Boolean geometry. Curved primitives use tessellated Boolean sur
 
 Choose an **Object** and direction A → B or B → A. The heatmap shows sampled nearest-surface distances, alongside maximum, area-weighted mean and RMS distance. One sample at each triangle centre can miss the true maximum; the two directions can differ. Scene context can be toggled. The preview does not provide individual face picking.
 
+## Movement
+
+Movement is for figures: an H-Anim humanoid, or any model whose animated parts sit inside other animated parts, such as a robot arm. It answers where and when the two revisions move differently before showing how.
+
+The grid runs under the stage, across its full width. It has one row per body part (whole body, head and neck, eyes, face, spine, each arm, hand and leg) and one column per moment. A blue cell means the part moves differently at that moment, darker for a larger difference. An amber cell means the same movement happens at another moment. Select a part's name to list its joints. When a scene holds several humanoids, each keeps its own rows, named after the figure ("Ana · Right arm"). Only parts that differ get a row; **Show N unchanged parts** lists the rest. Press or drag on the grid, or use the slider, to choose a moment. Under the grid, **Play** runs through the cycle and the ⏮ / ⏭ buttons jump to the previous or next difference; the clock beside the slider shows the time. On a phone the panel starts lower so the figure and its timeline are both in view, and the rows are taller for a finger.
+
+The stage poses both figures at the chosen moment: the revision solid, with each joint coloured like the grid, and the original as a violet see-through ghost. Overlaid, the ghost shows only on the parts that differ at that moment, so the rest of the figure stays readable. **Overlay** puts them in one place; **Side by side** puts the original on the left, shown in full. While the chosen moment is inside a stretch of difference, **Paths** draws where the end of that part travels through the stretch: violet for the original, blue for the revision (for the eyes, a point along their gaze). A skinned figure, such as the Joe example, shows its revised skin coloured the same way, each vertex by the joints that move it, including those above it: a turned neck colours the head. The file's own vertex colours are not shown in this view. In the side panel, the joints that differ most at that moment are listed with their angles.
+
+**What differs** summarises the comparison in time order, one line per stretch of difference: for example "Right arm · 1–3 s · Different movement, up to 105° at r_shoulder" or "Left leg · 3.5–4.5 s · Same movement, B 0.4 s later". Select a line to go to its largest difference.
+
+Each joint is compared by its own pose relative to its parent, so a difference appears at the joint where it starts: a changed shoulder colours the shoulder, not the elbow and hand it carries. Eyes count by their angle, so a 20° glance stands out although the eye barely moves in space. Rotations under 1° count as the same. A stretch is a timing change when one constant shift of up to 1.5 s makes every joint of the part match within 3° for the whole stretch. Joints are grouped by their H-Anim names; other names are listed under Other. Clocks start at zero; sensors, scripts and skinned meshes are not evaluated. More than 256 animated joints skips this analysis.
+
 ## Motion paths
 
 Choose an **Object** and **Compare** mode:
@@ -78,7 +90,7 @@ Motion follows a centre point, or a bounds corner that exposes rotation or scale
 
 ## Coverage and incomplete comparisons
 
-**Coverage** opens the generated list of 50 compared node types. See [X3D coverage](X3D_COVERAGE.md) for the full boundary.
+**Coverage** opens the generated list of 54 compared node types. See [X3D coverage](X3D_COVERAGE.md) for the full boundary.
 
 An incomplete comparison displays an open notice above the workspace listing skipped or uncertain content by file. Its count is marked **Partial**. Supported differences remain usable, but grey geometry and a zero count do not establish equality of unsupported content. The exports repeat the status and diagnostics.
 

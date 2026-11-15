@@ -357,7 +357,11 @@
       "DirectionalLight",
       "PointLight",
       "SpotLight",
-      "OrthoViewpoint"
+      "OrthoViewpoint",
+      "HAnimHumanoid",
+      "HAnimJoint",
+      "HAnimSegment",
+      "HAnimSite"
     ],
     "supportedFieldTypes": [
       "MFBool",

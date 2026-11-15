@@ -51,7 +51,7 @@ describe('printable HTML report', () => {
     expect(page).toContain('<time datetime="2026-10-11T15:04:05.000Z">');
     expect(body).toMatch(/Report written 2026-10-1[12] \d\d:\d\d \(UTC[+−]\d\d:\d\d\)/);
     expect(body).toContain(`X3Diff ${report.toolVersion}, report format 1.0`);
-    expect(body).toContain('50 node types');
+    expect(body).toContain('54 node types');
     expect(body).toContain('0.00001 scene units');
     expect(body).toContain('0.000001 absolute + 0.000001 relative');
     expect(body).toContain('0.0001 per channel');

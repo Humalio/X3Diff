@@ -147,7 +147,7 @@ test('coverage opens its catalog without losing the comparison', async ({ page }
   const opened = page.waitForEvent('popup');
   await page.getByRole('link', { name: 'Coverage', exact: true }).click();
   const coverage = await opened;
-  await expect(coverage.locator('.node-list li')).toHaveCount(50);
+  await expect(coverage.locator('.node-list li')).toHaveCount(54);
   await expect(page.locator('#caption')).toHaveText('7 differences');
   await coverage.getByRole('link', { name: /Open app/ }).click();
   await expect(coverage.locator('.workspace')).toHaveAttribute('aria-busy', 'false');

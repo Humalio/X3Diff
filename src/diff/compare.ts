@@ -61,11 +61,22 @@ function ref(n: ParsedNode): NodeRef {
     source: { elementPath: n.path },
   };
 }
+const PLACEMENT_FIELDS = new Set([
+  'translation',
+  'rotation',
+  'scale',
+  'scaleOrientation',
+  'center',
+]);
 function category(
   n: ParsedNode,
   field: string,
 ): { kind: ChangeKind; category: string; severity: Severity } {
-  if (n.type === 'Transform')
+  // A humanoid, its joints and its sites place what they hold, as a Transform does.
+  if (
+    n.type === 'Transform' ||
+    (['HAnimHumanoid', 'HAnimJoint', 'HAnimSite'].includes(n.type) && PLACEMENT_FIELDS.has(field))
+  )
     return { kind: 'transformChanged', category: 'transform', severity: 'high' };
   if (
     n.type === 'Coordinate' ||
@@ -205,7 +216,7 @@ function pointCount(
  * same fields, types and defaults. 4.0 keeps every one of those and adds fields. The catalog
  * generator checks each default against the official X3DUOM 4.0 and records the one that
  * changed (SpotLight.beamWidth); the 4.0 light fields `shadows` and `shadowIntensity` are in
- * the catalog, and every other 4.0 addition is reported as an unsupported setting rather
+ * the catalog, as are the humanoid fields listed in scripts/build-catalog.ts, and every other 4.0 addition is reported as an unsupported setting rather
  * than misread.
  */
 export const READABLE_VERSIONS = ['3.0', '3.1', '3.2', '3.3', '4.0'];
@@ -241,7 +252,7 @@ export function compareX3D(
           side,
           message:
             version === '4.0'
-              ? 'X3D 4.0 file read with the X3D 3.3 catalog; apart from the light shadow settings, settings and nodes new in 4.0 are not compared'
+              ? 'X3D 4.0 file read with the X3D 3.3 catalog; apart from the light shadow and humanoid settings, settings and nodes new in 4.0 are not compared'
               : `X3D ${version} file read with the X3D 3.3 catalog`,
         });
     }
