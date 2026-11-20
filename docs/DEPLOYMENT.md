@@ -4,7 +4,7 @@ The landing page is at `/X3Diff/`, the workbench at `/X3Diff/app.html`, and the 
 
 ## Publish
 
-1. Put this project at the root of `brunosimoes/X3Diff`.
+1. Put this project at the root of `Humalio/X3Diff`.
 2. In repository **Settings → Pages**, choose **GitHub Actions** as the source.
 3. Push to `main`, or run **Publish X3Diff** from Actions.
 

@@ -4,7 +4,7 @@
 
 X3Diff is a browser-based workbench for comparing XML-encoded X3D scenes (versions 3.0 to 4.0, read with an X3D 3.3 catalog). It connects a deterministic semantic report to interactive geometry and motion inspection, helping reviewers understand human-authored or AI-assisted edits before accepting them. It supports review decisions; it does not implement an automatic approval or merge gate.
 
-[Website and abstract](https://brunosimoes.github.io/X3Diff/) · [Open the workbench](https://brunosimoes.github.io/X3Diff/app.html) · [Project abstract](docs/ABSTRACT.md) · [User guide](docs/USER_GUIDE.md)
+[Website and abstract](https://humalio.github.io/X3Diff/) · [Open the workbench](https://humalio.github.io/X3Diff/app.html) · [Project abstract](docs/ABSTRACT.md) · [User guide](docs/USER_GUIDE.md)
 
 ## Review a revision
 

@@ -30,9 +30,9 @@ test('the landing page carries share tags and opens the motion example', async (
   expect(await meta('og:title')).toContain('X3Diff');
   expect((await meta('og:description'))!.length).toBeGreaterThan(40);
   expect(await meta('og:image')).toBe(
-    'https://brunosimoes.github.io/X3Diff/media/x3diff-motion-paths.jpg',
+    'https://humalio.github.io/X3Diff/media/x3diff-motion-paths.jpg',
   );
-  expect(await meta('og:url')).toBe('https://brunosimoes.github.io/X3Diff/');
+  expect(await meta('og:url')).toBe('https://humalio.github.io/X3Diff/');
 
   // The animation example sits with the other three and shows a picture from the tool.
   await expect(page.locator('.example-grid > a')).toHaveCount(4);
