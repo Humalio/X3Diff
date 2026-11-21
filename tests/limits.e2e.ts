@@ -34,3 +34,28 @@ for (const width of [1440, 375])
     await page.keyboard.press('Escape');
     await expect(page.getByRole('button', { name: 'Settings', exact: true })).toBeFocused();
   });
+
+test('a view that is still measuring does not leave the previous view’s note in its panel', async ({
+  page,
+}) => {
+  // Hold back the volume code, as a slow network or a cold server would.
+  await page.route(/solidRegions/, async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await route.continue();
+  });
+  await page.setViewportSize({ width: 375, height: 900 });
+  await page.goto('app.html?example=brickhaven');
+  await expect(page.locator('.workspace')).toHaveAttribute('aria-busy', 'false');
+  await page.locator('#tab-sections').click();
+  await expect(page.locator('#side details.limits')).toHaveCount(1);
+  await page.locator('#tab-volume').click();
+  // The panel belongs to Volume at once; its note appears with the measurement.
+  await expect(page.locator('#side h2').first()).toHaveText('Volume');
+  await expect(page.locator('#side details.limits')).toHaveCount(0);
+  const details = page.locator('#side details.limits');
+  await expect(details).toHaveCount(1);
+  await details.locator('summary').click();
+  await page.waitForTimeout(500);
+  await expect(details).toHaveAttribute('open', '');
+  expect((await details.locator('p').innerText()).length).toBeGreaterThan(100);
+});

@@ -170,6 +170,7 @@ export function geometryTabs(wb: Workbench): Tab[] {
   const resolutions: VolumeResolution[] = ['low', 'medium', 'high'];
   /** Unset follows the measurement: on for a mesh on a grid, off for exact solids. */
   let wholeObject: boolean | undefined;
+  let volumeRun = 0;
   const regionShown: Record<Region, boolean> = {
     BEFORE_ONLY: true,
     SHARED: true,
@@ -195,27 +196,12 @@ export function geometryTabs(wb: Workbench): Tab[] {
     },
     async show(alive) {
       syncSelection();
+      // Only the latest run may fill the panel it just took over.
+      const mine = ++volumeRun;
       wb.setFlat(false);
       wb.tools.replaceChildren(...views(() => void volume.show(alive)));
-      if (!solids.has(solidKey())) {
-        const key = solidKey();
-        captionText(wb.caption, pair().label, 'Measuring…');
-        const { buildSolidRegions } = await import('../viewer/solidRegions');
-        if (!alive() || key !== solidKey()) return;
-        let built: SolidRegionsResult | null = null;
-        try {
-          built = buildSolidRegions(wb.texts[0], wb.texts[1], wb.report, wb.volumeResolution, {
-            before: pair().before.path,
-            after: pair().after.path,
-          });
-          // An open surface encloses nothing: zero volume is "cannot be measured", not a result.
-          if (built && !hasMeasurableVolumes(built.volumes)) built = null;
-        } catch {
-          built = null;
-        }
-        solids.set(solidKey(), built);
-      }
-      const result = solids.get(solidKey());
+      // Take over the panel before measuring, so the previous view's controls and notes are
+      // not left in it, open, only to be replaced when the measurement ends.
       wb.side.replaceChildren(
         make('h2', '', 'Volume'),
         picker(() => void volume.show(alive)),
@@ -230,6 +216,25 @@ export function geometryTabs(wb: Workbench): Tab[] {
           ),
         ),
       );
+      if (!solids.has(solidKey())) {
+        const key = solidKey();
+        captionText(wb.caption, pair().label, 'Measuring…');
+        const { buildSolidRegions } = await import('../viewer/solidRegions');
+        if (!alive() || key !== solidKey() || mine !== volumeRun) return;
+        let built: SolidRegionsResult | null = null;
+        try {
+          built = buildSolidRegions(wb.texts[0], wb.texts[1], wb.report, wb.volumeResolution, {
+            before: pair().before.path,
+            after: pair().after.path,
+          });
+          // An open surface encloses nothing: zero volume is "cannot be measured", not a result.
+          if (built && !hasMeasurableVolumes(built.volumes)) built = null;
+        } catch {
+          built = null;
+        }
+        solids.set(solidKey(), built);
+      }
+      const result = solids.get(solidKey());
       if (!result) {
         captionText(wb.caption, pair().label, 'No closed solid to measure');
         wb.footer.replaceChildren();
